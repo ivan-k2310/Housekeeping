@@ -69,7 +69,6 @@ export const Login = () => {
         setLoginPassword("");
         const user = userCredential.user;
         console.log(`Logged in as ${user.email}`);
-        navigate("/dashboard");
       })
       .catch((error) => {
         const errorCode = error.code;

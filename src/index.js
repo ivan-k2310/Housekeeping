@@ -1,21 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import Login from "./comps/Login";
-import { Root } from "./comps/Root";
+import RouteAuth from "./comps/RouteAuth";
 import { ErrorPage } from "./comps/ErrorPage";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Root />,
+    path: "/login",
+    element: <Login />,
     errorElement: <ErrorPage />,
-    children: [
-      {
-        path: "login",
-        element: <Login />,
-      },
-    ],
+  },
+  {
+    path: "/dashboard",
+    element: <RouteAuth />,
+    errorElement: <ErrorPage />,
+    // children: [], (protected route go here)
   },
 ]);
 
