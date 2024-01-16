@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { collection, doc, setDoc, addDoc } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -23,14 +23,20 @@ export const Login = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        return setDoc(doc(collection(db, "users"), user.uid), {
-          name: name,
-        });
+        return Promise.all([
+          setDoc(doc(db, "users", user.uid), {
+            name: name,
+          }),
+          addDoc(collection(db, "users", user.uid, "agenda"), {
+            Tasks: [],
+          }),
+        ]);
       })
       .then(() => {
         setEmail("");
         setPassword("");
         setName("");
+        navigate("/dashboard");
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -69,6 +75,7 @@ export const Login = () => {
         setLoginPassword("");
         const user = userCredential.user;
         console.log(`Logged in as ${user.email}`);
+        navigate("/dashboard");
       })
       .catch((error) => {
         const errorCode = error.code;

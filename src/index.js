@@ -3,11 +3,12 @@ import ReactDOM from "react-dom/client";
 import Login from "./comps/Login";
 import RouteAuth from "./comps/RouteAuth";
 import { ErrorPage } from "./comps/ErrorPage";
+import { DashBoard } from "./comps/DashBoard";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const router = createBrowserRouter([
   {
-    path: "/login",
+    path: "/",
     element: <Login />,
     errorElement: <ErrorPage />,
   },
@@ -15,7 +16,12 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <RouteAuth />,
     errorElement: <ErrorPage />,
-    // children: [], (protected route go here)
+    children: [
+      {
+        path: "/dashboard/agenda",
+        element: <DashBoard />,
+      },
+    ],
   },
 ]);
 
