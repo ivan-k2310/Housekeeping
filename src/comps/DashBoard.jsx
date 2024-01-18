@@ -4,25 +4,22 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export const DashBoard = () => {
   const [userId, setUserId] = useState(""); // replace with actual user ID
+
   const [task, setTask] = useState({
-    id: "", // replace with actual task ID
     title: "",
     description: "",
-    // add other task properties here
+    completed: false,
   });
+
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in
         setUserId(user.uid);
       } else {
-        // User is signed out
         setUserId("");
       }
     });
-
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
@@ -32,24 +29,24 @@ export const DashBoard = () => {
       [event.target.name]: event.target.value,
     });
   };
-  const handleCreateTask = () => {
-    CreateTasks(userId, task);
+
+  const handleCreateTask = async (event) => {
+    event.preventDefault(); // prevent the default form submission behavior
+    try {
+      await CreateTasks(userId, task); // wait for the task to be added
+      setTask({
+        title: "",
+        description: "",
+        completed: false,
+      }); // reset the task state
+    } catch (error) {
+      console.error("Error creating task: ", error);
+    }
   };
 
   return (
     <div>
-      {/* Your dashboard code here */}
       <form onSubmit={handleCreateTask}>
-        <label>
-          Task ID:
-          <input
-            type="text"
-            name="id"
-            value={task.id}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
         <label>
           Title:
           <input
