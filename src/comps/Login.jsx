@@ -1,11 +1,12 @@
 import React from "react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { collection, doc, setDoc, addDoc } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { db } from "./firebase";
 
@@ -15,9 +16,23 @@ export const Login = () => {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [name, setName] = useState("");
-
+  const location = useLocation();
   const navigate = useNavigate();
-
+  useEffect(() => {
+    const checkUserAuthentication = () => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is signed in.
+          console.log("User is signed in");
+          console.log(user);
+        } else {
+          console.log("User is signed out");
+        }
+      });
+    };
+    checkUserAuthentication();
+  }, [location, navigate]);
   const handleSignUp = () => {
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
@@ -27,9 +42,7 @@ export const Login = () => {
           setDoc(doc(db, "users", user.uid), {
             name: name,
           }),
-          addDoc(collection(db, "users", user.uid, "agenda"), {
-            Tasks: [],
-          }),
+          addDoc(collection(db, "users", user.uid, "agenda")),
         ]);
       })
       .then(() => {
