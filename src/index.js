@@ -18,7 +18,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "/dashboard/agenda",
+        path: "/dashboard/create",
         element: <DashBoard />,
       },
     ],
