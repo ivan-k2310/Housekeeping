@@ -11,7 +11,6 @@ export const CreateTasks = async (userId, task) => {
       title: task.title,
       description: task.description,
       completed: task.completed,
-      // add other task properties here
     });
     console.log("Task created successfully with ID: ", docRef.id);
   } catch (error) {
