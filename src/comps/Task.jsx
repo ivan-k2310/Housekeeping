@@ -31,16 +31,16 @@ export const Task = ({ id, title, description, completed, userId }) => {
   };
   const deleteTask = async () => {
     console.log(id);
-    const docRef = doc(db, `users/${userId}/agenda/${id}`); // replace 'userId' with the actual user ID
+    const docRef = doc(db, `users/${userId}/agenda/${id}`);
     await deleteDoc(docRef);
     window.location.reload();
   };
 
   return (
-    <div>
-      <h2>{title}</h2>
-      <p>{description}</p>
-      <p>{completed ? "Completed" : "Not completed"}</p>
+    <div className="task-container">
+      <h2 className="task-title">{title}</h2>
+      <p className="task-description">{description}</p>
+      <p className="task-status">{completed ? "Completed" : "Not completed"}</p>
       <form onSubmit={updateTask}>
         <label>
           Title:
@@ -60,7 +60,9 @@ export const Task = ({ id, title, description, completed, userId }) => {
         </label>
         <button type="submit">Update Task</button>
       </form>
-      <button onClick={deleteTask}>Delete</button>
+      <button className="delete-button" onClick={deleteTask}>
+        Delete
+      </button>
     </div>
   );
 };

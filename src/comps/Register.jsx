@@ -1,19 +1,20 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { collection, doc, setDoc, addDoc } from "firebase/firestore";
 import {
   getAuth,
-  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
 import { db } from "./firebase";
 
-export const Login = () => {
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-
+export const Register = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   useEffect(() => {
     const checkUserAuthentication = () => {
       const auth = getAuth();
@@ -30,16 +31,22 @@ export const Login = () => {
     };
     checkUserAuthentication();
   }, [location, navigate]);
-
-  const handleLogin = (loginEmail, loginPassword) => {
+  const handleSignUp = () => {
     const auth = getAuth();
-    signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
-        setLoginEmail("");
-        setLoginPassword("");
         const user = userCredential.user;
-        console.log(`Logged in as ${user.email}`);
+        return Promise.all([
+          setDoc(doc(db, "users", user.uid), {
+            name: name,
+          }),
+          addDoc(collection(db, "users", user.uid, "agenda")),
+        ]);
+      })
+      .then(() => {
+        setEmail("");
+        setPassword("");
+        setName("");
         navigate("/dashboard");
       })
       .catch((error) => {
@@ -47,21 +54,21 @@ export const Login = () => {
         const errorMessage = error.message;
 
         switch (errorCode) {
+          case "auth/email-already-in-use":
+            console.error(
+              "The email address is already in use by another account."
+            );
+            break;
           case "auth/invalid-email":
             console.error("The email address is not valid.");
             break;
-          case "auth/user-disabled":
+          case "auth/operation-not-allowed":
             console.error(
-              "The user account has been disabled by an administrator."
+              "Email/password accounts are not enabled. Enable email/password in the Firebase Console, under the Auth tab."
             );
             break;
-          case "auth/user-not-found":
-            console.error(
-              "There is no user record corresponding to this email."
-            );
-            break;
-          case "auth/wrong-password":
-            console.error("The password is invalid for the given email.");
+          case "auth/weak-password":
+            console.error("The password is too weak.");
             break;
           default:
             console.error(errorMessage);
@@ -75,20 +82,23 @@ export const Login = () => {
         <input
           type="text"
           placeholder="Email"
-          value={loginEmail}
-          onChange={(e) => setLoginEmail(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
           placeholder="Password"
-          value={loginPassword}
-          onChange={(e) => setLoginPassword(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-        <button onClick={() => handleLogin(loginEmail, loginPassword)}>
-          Login
-        </button>
+        <input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <button onClick={handleSignUp}>Sign In</button>
       </div>
     </div>
   );
 };
-export default Login;
