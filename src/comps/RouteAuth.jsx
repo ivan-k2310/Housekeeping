@@ -1,4 +1,5 @@
 import React from "react";
+import { Logout } from "./Logout";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -27,20 +28,7 @@ export const RouteAuth = () => {
       <div id="sidebar">
         <h1>React Router Contacts</h1>
         <div>
-          <form id="search-form" role="search">
-            <input
-              id="q"
-              aria-label="Search contacts"
-              placeholder="Search"
-              type="search"
-              name="q"
-            />
-            <div id="search-spinner" aria-hidden hidden={true} />
-            <div className="sr-only" aria-live="polite"></div>
-          </form>
-          <form method="post">
-            <button type="submit">New</button>
-          </form>
+          <Logout></Logout>
         </div>
       </div>
       <div id="detail">
